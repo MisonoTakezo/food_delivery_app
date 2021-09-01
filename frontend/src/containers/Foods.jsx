@@ -55,6 +55,11 @@ const ItemWrapper = styled.div`
   margin: 16px;
 `;
 
+const submitOrder = () => {
+  // TODO 仮注文のAPIのPOSTリクエストを実装
+  console.log("登録ボタンが押された！");
+}
+
 export const Foods = ({ match }) => {
 
   const [foodsState, dispatch] = useReducer(foodsReducer, foodsInitialState);
@@ -128,9 +133,22 @@ export const Foods = ({ match }) => {
         <FoodOrderDialog
           food={state.selectedFood}
           isOpen={state.isOpenOrderDialog}
+          countNumber={state.selectedFoodCount}
+          onClickCountUp={() => setState({
+            ...state,
+            selectedFoodCount: state.selectedFoodCount + 1,
+          })}
+          onClickCountDown={() => setState({
+            ...state,
+            selectedFoodCount: state.selectedFoodCount - 1,
+          })}
+          onClickOrder={() => submitOrder()}
+          // モーダルを閉じる時は全てのstateを初期化する
           onClose={() => setState({
             ...state,
             isOpenOrderDialog: false,
+            selectedFood: null,
+            selectedFoodCount: 1,
           })}
         />
       }

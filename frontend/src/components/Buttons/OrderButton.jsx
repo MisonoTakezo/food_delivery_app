@@ -1,0 +1,14 @@
+import { BaseButton } from "../shared_style";
+
+import { FONT_SIZE } from "../../style_constants";
+import { styled } from "@material-ui/styles";
+
+export const OrderButton =
+  styled(BaseButton)`
+    width: 390px;
+    background-color: black;
+    color: white;
+    border-style: none;
+    padding: 8px 16px;
+    font-size: ${FONT_SIZE.BODY1};
+  `;
