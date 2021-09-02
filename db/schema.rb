@@ -22,11 +22,11 @@ ActiveRecord::Schema.define(version: 2021_08_26_130225) do
 
   create_table "line_foods", force: :cascade do |t|
     t.integer "restaurant_id", null: false
-    t.integer "foods_id", null: false
+    t.integer "food_id", null: false
     t.integer "order_id"
     t.integer "count", default: 0, null: false
     t.boolean "active", default: false, null: false
-    t.index ["foods_id"], name: "index_line_foods_on_foods_id"
+    t.index ["food_id"], name: "index_line_foods_on_food_id"
     t.index ["order_id"], name: "index_line_foods_on_order_id"
     t.index ["restaurant_id"], name: "index_line_foods_on_restaurant_id"
   end
@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 2021_08_26_130225) do
   end
 
   add_foreign_key "foods", "restaurants"
-  add_foreign_key "line_foods", "foods", column: "foods_id"
+  add_foreign_key "line_foods", "foods"
   add_foreign_key "line_foods", "orders"
   add_foreign_key "line_foods", "restaurants"
 end
