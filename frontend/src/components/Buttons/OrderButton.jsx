@@ -3,8 +3,7 @@ import { BaseButton } from "../shared_style";
 import { FONT_SIZE } from "../../style_constants";
 import { styled } from "@material-ui/styles";
 
-export const OrderButton =
-  styled(BaseButton)`
+export const OrderButton = styled(BaseButton)`
     width: 390px;
     background-color: black;
     color: white;

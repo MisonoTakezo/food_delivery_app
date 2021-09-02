@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useReducer, useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { COLORS } from "../style_constants";
 
@@ -9,6 +9,7 @@ import { LocalMallIcon } from "../components/icons";
 import { FoodWrapper } from "../components/FoodWrapper";
 import Skelton from "@material-ui/lab/Skeleton";
 import { FoodOrderDialog } from "../components/FoodOrderDialog";
+import { NewOrderConfirmDialog } from "../components/NewOrderConfirmDialog";
 
 // reducers
 import {
@@ -19,12 +20,14 @@ import {
 
 // api
 import { fetchFoods } from "../apis/foods";
+import { postLineFoods, replaceLineFoods } from "../apis/line_foods";
 
 // images
 import MainLogo from "../images/logo.png";
 import FoodImage from "../images/food-image.jpg";
+
 // constants
-import { REQUEST_STATE } from "../constants";
+import { HTTP_STATUS_CODE, REQUEST_STATE } from "../constants";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -55,22 +58,45 @@ const ItemWrapper = styled.div`
   margin: 16px;
 `;
 
-const submitOrder = () => {
-  // TODO 仮注文のAPIのPOSTリクエストを実装
-  console.log("登録ボタンが押された！");
-}
-
 export const Foods = ({ match }) => {
 
   const [foodsState, dispatch] = useReducer(foodsReducer, foodsInitialState);
+  const history = useHistory();
 
   const initialState = {
     isOpenOrderDialog: false,
     selectedFood: null,
     selectedFoodCount: 1,
+    isOpenNewOrderDialog: false,
+    existingRestaurantName: "",
+    newRestaurantName: "",
   }
 
   const [state, setState] = useState(initialState);
+
+  const submitOrder = async () => {
+    const res = await postLineFoods({
+      foodId: state.selectedFood.id,
+      count: state.selectedFoodCount,
+    });
+    if (res.status === HTTP_STATUS_CODE.NOT_ACCEPTABLE) {
+      setState({
+        ...state,
+        isOpenOrderDialog: false,
+        isOpenNewOrderDialog: true,
+        existingRestaurantName: res.data.existing_restaurant,
+        newRestaurantName: res.data.new_restaurant,
+      });
+    }
+  };
+
+  const replaceOrder = async () => {
+    const res = await replaceLineFoods({
+      foodId: state.selectedFood.id,
+      count: state.selectedFoodCount,
+    });
+    history.push("/orders");
+  };
 
   useEffect(() => {
     dispatch({ type: foodsActionTypes.FETCHING });
@@ -151,6 +177,21 @@ export const Foods = ({ match }) => {
             selectedFood: null,
             selectedFoodCount: 1,
           })}
+        />
+      }
+      {
+        state.isOpenNewOrderDialog &&
+        <NewOrderConfirmDialog
+          isOpen={state.isOpenNewOrderDialog}
+          onClose={() => setState(
+            {
+              ...state,
+              isOpenNewOrderDialog: false,
+            }
+          )}
+          existingRestaurantName={state.existingRestaurantName}
+          newRestaurantName={state.newRestaurantName}
+          onClick={() => replaceOrder()}
         />
       }
     </Fragment >
