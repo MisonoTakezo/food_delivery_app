@@ -75,11 +75,12 @@ export const Foods = ({ match }) => {
   useEffect(() => {
     dispatch({ type: foodsActionTypes.FETCHING });
     fetchFoods(match.params.restaurantsId)
-      .then((data) => {
+      .then((res) => {
+        console.log(res);
         dispatch({
           type: foodsActionTypes.FETCH_SUCCESS,
           payload: {
-            foods: data.foods,
+            foods: res.data.foods,
           }
         });
       })
