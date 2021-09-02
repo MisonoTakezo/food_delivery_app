@@ -75,18 +75,25 @@ export const Foods = ({ match }) => {
   const [state, setState] = useState(initialState);
 
   const submitOrder = async () => {
-    const res = await postLineFoods({
-      foodId: state.selectedFood.id,
-      count: state.selectedFoodCount,
-    });
-    if (res.status === HTTP_STATUS_CODE.NOT_ACCEPTABLE) {
-      setState({
-        ...state,
-        isOpenOrderDialog: false,
-        isOpenNewOrderDialog: true,
-        existingRestaurantName: res.data.existing_restaurant,
-        newRestaurantName: res.data.new_restaurant,
+    // TODO Refactors
+    try {
+      const res = await postLineFoods({
+        foodId: state.selectedFood.id,
+        count: state.selectedFoodCount,
       });
+      history.push("/orders");
+    } catch (e) {
+      if (e.response.status === HTTP_STATUS_CODE.NOT_ACCEPTABLE) {
+        setState({
+          ...state,
+          isOpenOrderDialog: false,
+          isOpenNewOrderDialog: true,
+          existingRestaurantName: e.response.data.existing_restaurant,
+          newRestaurantName: e.response.data.new_restaurant,
+        });
+      } else {
+        throw e;
+      }
     }
   };
 
@@ -154,8 +161,8 @@ export const Foods = ({ match }) => {
             )
         }
       </FoodsList>
-      // TODO refactors
       {
+        // TODO refactors
         state.isOpenOrderDialog &&
         <FoodOrderDialog
           food={state.selectedFood}
@@ -191,7 +198,7 @@ export const Foods = ({ match }) => {
           )}
           existingRestaurantName={state.existingRestaurantName}
           newRestaurantName={state.newRestaurantName}
-          onClick={() => replaceOrder()}
+          onClickSubmit={() => replaceOrder()}
         />
       }
     </Fragment >
