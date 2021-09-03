@@ -21,4 +21,13 @@ export const replaceLineFoods = async (params) => {
   return res;
 };
 
+export const fetchLineFoods = async () => {
+  try {
+    const res = await axios.get(lineFoods);
+    return res;
+  } catch (e) {
+    alert(e);
+  }
+};
+
 
