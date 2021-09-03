@@ -12,9 +12,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { fetchLineFoods } from "../apis/line_foods";
 import { postOrder } from "../apis/orders"
 
-// urls
-import { lineFoods } from "../urls";
-
 //reducers
 import {
   initialState,
@@ -69,8 +66,9 @@ export const Orders = () => {
   }, []);
 
   const postLineFoods = async () => {
-    await dispatch({ type: lineFoods.ActionTyps.POSTING });
-    await postOrder({ line_food_ids: state.lineFoodsSummary.line_food_ids })
+    const p1 = dispatch({ type: lineFoodsActionTypes.POSTING });
+    const p2 = postOrder({ line_food_ids: state.lineFoodsSummary.line_food_ids })
+    await Promise.all([p1, p2]);
     dispatch({ type: lineFoodsActionTypes.POST_SUCCESS });
     window.location.reload();
   };
@@ -116,7 +114,7 @@ export const Orders = () => {
             {
               state.fetchState === REQUEST_STATE.OK && state.lineFoodsSummary &&
               <OrderButton
-                onClick={() => postLineFoods}
+                onClick={() => postLineFoods()}
                 disabled={state.postState === REQUEST_STATE.LOADING || state.postState == REQUEST_STATE.OK}
               >
                 {orderButtonLabel()}
